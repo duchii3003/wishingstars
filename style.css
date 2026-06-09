@@ -1343,3 +1343,87 @@ body {
     font-size: 14px;
   }
 }
+/* ===== FINAL: NO BLUR AFTER SUBMIT, BLUR ONLY WHEN OPENING NOTE ===== */
+
+/* Màn lời chúc sau khi gửi: không blur nền, không che bầu trời */
+.result-screen {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  pointer-events: none !important;
+}
+
+/* Nội dung lời chúc cũng không chặn tương tác toàn màn hình */
+.result-content {
+  pointer-events: none !important;
+}
+
+/* Chỉ card note được bấm */
+.result-note-card {
+  pointer-events: auto !important;
+}
+
+/* Khi mở note thì mới blur nền */
+.exam-tips-overlay {
+  background: rgba(2, 6, 23, 0.48) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+}
+
+/* Popup note vẫn nhận click bình thường */
+.exam-tips-card,
+.exam-tips-close {
+  pointer-events: auto !important;
+}
+
+/* Gọn lại floating wishes trên điện thoại, tránh loạn layout */
+@media (max-width: 760px) {
+  .result-screen {
+    padding-left: 18px !important;
+    padding-right: 18px !important;
+  }
+
+  .result-main-message {
+    font-size: clamp(31px, 9.4vw, 42px) !important;
+    line-height: 1.12 !important;
+    max-width: 96vw !important;
+  }
+
+  .result-blessing {
+    margin-top: 36px !important;
+  }
+
+  .result-blessing-title {
+    font-size: clamp(24px, 7vw, 32px) !important;
+    line-height: 1.18 !important;
+  }
+
+  .result-blessing-subtitle {
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  .result-note-card {
+    margin-top: 22px !important;
+    padding: 15px 15px !important;
+    border-radius: 22px !important;
+  }
+
+  .floating-wish {
+    display: block !important;
+    z-index: 20 !important;
+    width: min(260px, 68vw) !important;
+    padding: 10px 12px !important;
+    font-size: 12px !important;
+    line-height: 1.35 !important;
+    opacity: 0;
+  }
+
+  .floating-wish strong {
+    font-size: 13px !important;
+  }
+
+  .floating-wish span {
+    font-size: 12px !important;
+  }
+}
