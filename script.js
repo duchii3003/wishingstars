@@ -45,6 +45,7 @@ const hero = document.querySelector(".hero");
 
 let remoteWishes = [];
 let pendingWishes = [];
+let hasLoadedRemoteWishes = false;
 
 init();
 
@@ -183,7 +184,8 @@ async function handleSubmit(event) {
     fullName: formData.get("fullName").trim(),
     nguyenVong1: formData.get("nguyenVong1").trim(),
     wish: formData.get("wish").trim(),
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
+    isNew: true
   });
 
   if (!newWish.fullName || !newWish.nguyenVong1 || !newWish.wish) {
@@ -206,10 +208,7 @@ async function handleSubmit(event) {
   hero.classList.add("wish-sent");
 
   showResultScreen(newWish);
-
-  if (!isMobileScreen()) {
-    revealFloatingWishes();
-  }
+  revealFloatingWishes();
 
   sendWishToGoogleSheet(newWish);
 
@@ -259,6 +258,11 @@ function renderWishes() {
   visualWishes.forEach((wish) => {
     createStar(wish, wish.isNew);
   });
+
+  if (!hasLoadedRemoteWishes) {
+    wishCount.textContent = "...";
+    return;
+  }
 
   wishCount.textContent = remoteWishes.length + pendingWishes.length;
 }
@@ -319,6 +323,8 @@ function loadRemoteWishes() {
   window[callbackName] = function (data) {
     try {
       if (data && data.ok && Array.isArray(data.wishes)) {
+        hasLoadedRemoteWishes = true;
+
         remoteWishes = data.wishes
           .filter(item => item.fullName || item.wish)
           .map(normalizeWish);
@@ -337,7 +343,10 @@ function loadRemoteWishes() {
   const script = document.createElement("script");
   script.src = `${GOOGLE_SCRIPT_URL}?callback=${callbackName}&t=${Date.now()}`;
   script.id = callbackName;
+
   script.onerror = function () {
+    hasLoadedRemoteWishes = true;
+    renderWishes();
     cleanupJsonp(callbackName);
   };
 
@@ -511,12 +520,13 @@ function createSparkle(config) {
 }
 
 function revealFloatingWishes() {
-  const pool = shuffleArray([...remoteWishes, ...SAMPLE_WISHES.map(normalizeWish)]).slice(0, 5);
+  const amount = isMobileScreen() ? 3 : 5;
+  const pool = shuffleArray([...remoteWishes, ...SAMPLE_WISHES.map(normalizeWish)]).slice(0, amount);
 
   pool.forEach((wish, index) => {
     setTimeout(() => {
       createFloatingWish(wish, index);
-    }, 350 + index * 420);
+    }, 350 + index * 520);
   });
 }
 
@@ -524,7 +534,7 @@ function createFloatingWish(wish, index) {
   const floating = document.createElement("div");
   floating.className = "floating-wish";
 
-  const positions = [
+  const desktopPositions = [
     { x: 8, y: 18 },
     { x: 62, y: 18 },
     { x: 14, y: 58 },
@@ -532,6 +542,13 @@ function createFloatingWish(wish, index) {
     { x: 38, y: 72 }
   ];
 
+  const mobilePositions = [
+    { x: 5, y: 18 },
+    { x: 8, y: 72 },
+    { x: 38, y: 78 }
+  ];
+
+  const positions = isMobileScreen() ? mobilePositions : desktopPositions;
   const position = positions[index % positions.length];
 
   floating.style.setProperty("--wish-x", `${position.x}%`);
@@ -546,7 +563,7 @@ function createFloatingWish(wish, index) {
 
   setTimeout(() => {
     floating.remove();
-  }, 6500);
+  }, isMobileScreen() ? 8500 : 6500);
 }
 
 function showTooltip(event, wish) {
