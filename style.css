@@ -999,3 +999,347 @@ textarea:focus {
     font-size: 14px;
   }
 }
+/* ===== MOBILE RESULT SCREEN CLEANUP ===== */
+
+html,
+body {
+  width: 100%;
+  overflow: hidden;
+}
+
+.sky {
+  height: 100dvh;
+  min-height: 100dvh;
+}
+
+.result-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: none;
+  overflow-y: auto;
+  padding: max(28px, env(safe-area-inset-top)) 22px max(34px, env(safe-area-inset-bottom));
+  background: rgba(3, 7, 18, 0.18);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+}
+
+.result-screen.show {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: resultFadeIn 0.55s ease forwards;
+}
+
+@keyframes resultFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.result-content {
+  width: min(980px, 100%);
+  margin: auto;
+  text-align: center;
+  animation: resultContentIn 0.9s ease forwards;
+}
+
+@keyframes resultContentIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+    filter: blur(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.result-main-message {
+  margin: 0 auto;
+  max-width: 980px;
+  color: #ffffff;
+  font-size: clamp(44px, 5.4vw, 78px);
+  line-height: 1.08;
+  letter-spacing: -0.055em;
+  font-weight: 900;
+  text-shadow:
+    0 0 22px rgba(255, 255, 255, 0.42),
+    0 0 48px rgba(139, 233, 255, 0.58),
+    0 0 98px rgba(247, 182, 255, 0.34);
+}
+
+.result-main-message span {
+  display: block;
+}
+
+.result-blessing {
+  margin: clamp(34px, 5vh, 54px) auto 0;
+  max-width: 760px;
+}
+
+.result-blessing-title {
+  margin: 0;
+  color: #ffffff;
+  font-size: clamp(28px, 3.3vw, 44px);
+  line-height: 1.15;
+  letter-spacing: -0.035em;
+  font-weight: 900;
+  text-shadow:
+    0 0 20px rgba(255, 255, 255, 0.38),
+    0 0 46px rgba(139, 233, 255, 0.36);
+}
+
+.result-blessing-subtitle {
+  margin: 12px auto 0;
+  max-width: 660px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 16px;
+  line-height: 1.55;
+  font-weight: 600;
+}
+
+.result-note-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  width: min(620px, 100%);
+  margin: 26px auto 0;
+  padding: 18px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 24px;
+  color: white;
+  text-align: left;
+  font-family: inherit;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(139, 233, 255, 0.15), transparent 36%),
+    rgba(8, 13, 34, 0.68);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.28),
+    0 0 38px rgba(139, 233, 255, 0.13);
+  cursor: pointer;
+}
+
+.result-note-icon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  color: #08111f;
+  background: #ffffff;
+  font-weight: 900;
+}
+
+.result-note-card strong {
+  display: block;
+  color: #ffe9a8;
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+.result-note-card small {
+  display: block;
+  margin-top: 4px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.exam-tips-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(2, 6, 23, 0.46);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.exam-tips-overlay.show {
+  display: flex;
+}
+
+.exam-tips-card {
+  position: relative;
+  width: min(760px, calc(100vw - 32px));
+  max-height: min(78dvh, 720px);
+  overflow-y: auto;
+  padding: 28px 30px 30px;
+  border-radius: 30px;
+  color: white;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(139, 233, 255, 0.18), transparent 34%),
+    radial-gradient(circle at 88% 100%, rgba(247, 182, 255, 0.16), transparent 36%),
+    rgba(8, 13, 34, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 30px 100px rgba(0, 0, 0, 0.55),
+    0 0 80px rgba(139, 233, 255, 0.18);
+}
+
+.exam-tips-card h3 {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 42px);
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  text-align: center;
+}
+
+.exam-tips-card .tips-intro {
+  max-width: 620px;
+  margin: 12px auto 24px;
+  color: rgba(255, 255, 255, 0.76);
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.exam-tips-card ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.exam-tips-card li {
+  margin-bottom: 13px;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 15px;
+  line-height: 1.58;
+}
+
+.exam-tips-card strong {
+  color: #ffe9a8;
+}
+
+.exam-tips-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+@media (max-width: 760px) {
+  .hero {
+    width: min(100% - 30px, 520px);
+    padding-top: 10dvh;
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.28em;
+  }
+
+  h1 {
+    font-size: clamp(46px, 15.2vw, 68px);
+    line-height: 1.02;
+    letter-spacing: -0.06em;
+  }
+
+  .subtitle {
+    max-width: 92%;
+    margin-top: 24px;
+    font-size: 18px;
+    line-height: 1.55;
+  }
+
+  .primary-btn,
+  .submit-btn {
+    font-size: 18px;
+    padding: 16px 30px;
+  }
+
+  .counter {
+    font-size: 16px;
+  }
+
+  .floating-wish {
+    display: none !important;
+  }
+
+  .result-screen.show {
+    display: block;
+  }
+
+  .result-content {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 28px 0 34px;
+  }
+
+  .result-main-message {
+    font-size: clamp(34px, 10.2vw, 46px);
+    line-height: 1.1;
+    letter-spacing: -0.045em;
+  }
+
+  .result-blessing {
+    margin-top: 44px;
+  }
+
+  .result-blessing-title {
+    font-size: clamp(26px, 8vw, 36px);
+    line-height: 1.16;
+  }
+
+  .result-blessing-subtitle {
+    max-width: 94%;
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  .result-note-card {
+    width: min(100%, 520px);
+    margin-top: 24px;
+    padding: 16px 16px;
+    border-radius: 22px;
+  }
+
+  .result-note-card strong {
+    font-size: 16px;
+  }
+
+  .result-note-card small {
+    font-size: 14px;
+  }
+
+  .exam-tips-overlay {
+    padding: 18px;
+  }
+
+  .exam-tips-card {
+    width: 100%;
+    max-height: 78dvh;
+    padding: 26px 22px 26px;
+    border-radius: 24px;
+  }
+
+  .exam-tips-card h3 {
+    font-size: 28px;
+  }
+
+  .exam-tips-card li {
+    font-size: 14px;
+  }
+}
