@@ -878,3 +878,217 @@ textarea:focus {
     font-size: 13px;
   }
 }
+/* ===== FINAL POLISH: DREAM MESSAGE + CENTERED EXAM TIPS MODAL ===== */
+
+.dream-message {
+  position: fixed !important;
+  left: 50% !important;
+  top: 12vh !important;
+  z-index: 17 !important;
+  width: min(980px, calc(100vw - 36px)) !important;
+  transform: translateX(-50%) scale(0.92);
+  text-wrap: balance;
+}
+
+.dream-message .line {
+  display: block;
+  white-space: nowrap;
+}
+
+.dream-message.show {
+  animation: dreamReveal 1.2s ease forwards;
+}
+
+.personal-blessing {
+  top: 53vh !important;
+  z-index: 18 !important;
+  width: min(760px, calc(100vw - 32px)) !important;
+}
+
+.blessing-title {
+  font-size: clamp(25px, 3.2vw, 40px) !important;
+  line-height: 1.16 !important;
+  text-wrap: balance;
+}
+
+.blessing-subtitle {
+  max-width: 640px !important;
+  margin-top: 10px !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+.exam-note {
+  margin-top: 18px !important;
+  width: min(560px, 100%) !important;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.exam-note:hover {
+  transform: translateY(-2px);
+  border-color: rgba(139, 233, 255, 0.38);
+  box-shadow:
+    0 20px 56px rgba(0, 0, 0, 0.36),
+    0 0 46px rgba(139, 233, 255, 0.2);
+}
+
+.exam-toggle-row {
+  cursor: pointer;
+}
+
+.exam-tips {
+  display: none !important;
+}
+
+/* Full-screen tips modal */
+
+.exam-tips-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(2, 6, 23, 0.42);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.exam-tips-overlay.show {
+  display: flex;
+  animation: overlayFadeIn 0.22s ease forwards;
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.exam-tips-card {
+  position: relative;
+  width: min(760px, calc(100vw - 32px));
+  max-height: min(78vh, 720px);
+  overflow-y: auto;
+  padding: 28px 30px 30px;
+  border-radius: 30px;
+  color: white;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(139, 233, 255, 0.18), transparent 34%),
+    radial-gradient(circle at 88% 100%, rgba(247, 182, 255, 0.16), transparent 36%),
+    rgba(8, 13, 34, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    0 30px 100px rgba(0, 0, 0, 0.55),
+    0 0 80px rgba(139, 233, 255, 0.18),
+    inset 0 0 34px rgba(255, 255, 255, 0.04);
+  animation: tipsCardPop 0.32s ease forwards;
+}
+
+@keyframes tipsCardPop {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.96);
+    filter: blur(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.exam-tips-card h3 {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 42px);
+  line-height: 1.08;
+  letter-spacing: -0.045em;
+  text-align: center;
+  text-shadow:
+    0 0 24px rgba(255, 255, 255, 0.32),
+    0 0 54px rgba(139, 233, 255, 0.36);
+}
+
+.exam-tips-card .tips-intro {
+  max-width: 620px;
+  margin: 12px auto 24px;
+  color: rgba(255, 255, 255, 0.76);
+  text-align: center;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.exam-tips-card ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.exam-tips-card li {
+  margin-bottom: 13px;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 15px;
+  line-height: 1.58;
+}
+
+.exam-tips-card li:last-child {
+  margin-bottom: 0;
+}
+
+.exam-tips-card strong {
+  color: #ffe9a8;
+}
+
+.exam-tips-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 50%;
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 24px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.exam-tips-close:hover {
+  background: rgba(255, 255, 255, 0.18);
+  transform: scale(1.05);
+}
+
+@media (max-width: 760px) {
+  .dream-message {
+    top: 10vh !important;
+    font-size: clamp(30px, 10vw, 56px) !important;
+  }
+
+  .dream-message .line {
+    white-space: normal;
+  }
+
+  .personal-blessing {
+    top: 50vh !important;
+  }
+
+  .blessing-title {
+    font-size: clamp(22px, 7vw, 32px) !important;
+  }
+
+  .exam-tips-card {
+    padding: 26px 22px 26px;
+    border-radius: 24px;
+  }
+
+  .exam-tips-card li {
+    font-size: 14px;
+  }
+}
