@@ -78,6 +78,7 @@ function init() {
   renderWishes();
   prepareDreamMessage();
   preparePersonalBlessing();
+  prepareExamTipsOverlay();
 
   openWishForm.addEventListener("click", showModal);
   closeWishForm.addEventListener("click", hideModal);
@@ -101,9 +102,13 @@ function prepareDreamMessage() {
   const message = document.createElement("div");
   message.id = "dreamMessage";
   message.className = "dream-message";
-  message.textContent = "Quên mọi lỗi lầm đi, bạn chỉ còn cách ước mơ của mình 1 bài kiểm tra nữa thôi!";
+  message.innerHTML = `
+    <span class="line">Quên mọi lỗi lầm đi,</span>
+    <span class="line">bạn chỉ còn cách ước mơ của mình</span>
+    <span class="line">1 bài kiểm tra nữa thôi!</span>
+  `;
 
-  hero.appendChild(message);
+  document.body.appendChild(message);
 }
 
 function preparePersonalBlessing() {
@@ -127,30 +132,97 @@ function preparePersonalBlessing() {
           <span>Tick vào đây để xem mẹo làm bài trắc nghiệm khi thời gian đang rất áp lực.</span>
         </span>
       </label>
-
-      <div class="exam-tips">
-        <ul>
-          <li><strong>Lướt nhanh toàn đề trước.</strong> Đừng lao ngay vào một câu quá dài. Hãy scan để biết đề có bao nhiêu phần dễ, vừa và khó.</li>
-          <li><strong>Câu nào đọc hơn 1 phút 30 giây vẫn chưa hiểu hướng làm thì bỏ qua tạm.</strong> Đánh dấu lại rồi quay về sau, đừng để một câu kéo mất nhịp cả bài.</li>
-          <li><strong>Làm chắc câu dễ trước.</strong> Mục tiêu đầu tiên là gom điểm an toàn, không phải chứng minh mình giải được câu khó nhất.</li>
-          <li><strong>Dùng phương pháp loại trừ.</strong> Nếu chưa ra đáp án, hãy gạch các phương án vô lý trước để tăng xác suất chọn đúng.</li>
-          <li><strong>Chia thời gian theo vòng.</strong> Vòng 1 làm câu chắc; vòng 2 xử lý câu cần suy nghĩ; vòng 3 quay lại câu khó và kiểm tra phiếu trả lời.</li>
-          <li><strong>Đừng bỏ trống đáp án khi sắp hết giờ.</strong> Nếu không còn thời gian, chọn phương án hợp lý nhất sau khi loại trừ.</li>
-          <li><strong>Mỗi khi hoảng, dừng 5 giây.</strong> Hít sâu, thả lỏng vai, nhìn lại câu hỏi. Bình tĩnh giúp não đọc đề chính xác hơn.</li>
-          <li><strong>Kiểm tra mã đề, số báo danh và phiếu trả lời.</strong> Đặc biệt chú ý tô đúng dòng, đúng câu, không lệch thứ tự.</li>
-        </ul>
-      </div>
     </div>
   `;
 
   document.body.appendChild(blessing);
 
-  const toggle = document.getElementById("examTipsToggle");
   const examNote = document.getElementById("examNote");
+  const toggle = document.getElementById("examTipsToggle");
 
-  toggle.addEventListener("change", function () {
-    examNote.classList.toggle("open", toggle.checked);
+  examNote.addEventListener("click", function () {
+    toggle.checked = true;
+    openExamTipsOverlay();
   });
+
+  toggle.addEventListener("click", function (event) {
+    event.stopPropagation();
+    openExamTipsOverlay();
+  });
+}
+
+function prepareExamTipsOverlay() {
+  if (document.getElementById("examTipsOverlay")) {
+    return;
+  }
+
+  const overlay = document.createElement("div");
+  overlay.id = "examTipsOverlay";
+  overlay.className = "exam-tips-overlay";
+
+  overlay.innerHTML = `
+    <div class="exam-tips-card">
+      <button class="exam-tips-close" id="examTipsClose" type="button">×</button>
+
+      <h3>Mẹo làm bài trắc nghiệm khi áp lực thời gian cao</h3>
+
+      <p class="tips-intro">
+        Không cần thắng cả đề ngay từ đầu. Hãy giữ nhịp, gom điểm chắc trước,
+        rồi quay lại xử lý phần khó sau.
+      </p>
+
+      <ul>
+        <li><strong>Lướt nhanh toàn đề trước.</strong> Đừng lao ngay vào một câu quá dài. Hãy scan để biết đề có bao nhiêu phần dễ, vừa và khó.</li>
+        <li><strong>Câu nào đọc hơn 1 phút 30 giây vẫn chưa hiểu hướng làm thì bỏ qua tạm.</strong> Đánh dấu lại rồi quay về sau, đừng để một câu kéo mất nhịp cả bài.</li>
+        <li><strong>Làm chắc câu dễ trước.</strong> Mục tiêu đầu tiên là gom điểm an toàn, không phải chứng minh mình giải được câu khó nhất.</li>
+        <li><strong>Dùng phương pháp loại trừ.</strong> Nếu chưa ra đáp án, hãy gạch các phương án vô lý trước để tăng xác suất chọn đúng.</li>
+        <li><strong>Chia thời gian theo vòng.</strong> Vòng 1 làm câu chắc; vòng 2 xử lý câu cần suy nghĩ; vòng 3 quay lại câu khó và kiểm tra phiếu trả lời.</li>
+        <li><strong>Đừng bỏ trống đáp án khi sắp hết giờ.</strong> Nếu không còn thời gian, chọn phương án hợp lý nhất sau khi loại trừ.</li>
+        <li><strong>Mỗi khi hoảng, dừng 5 giây.</strong> Hít sâu, thả lỏng vai, nhìn lại câu hỏi. Bình tĩnh giúp não đọc đề chính xác hơn.</li>
+        <li><strong>Kiểm tra mã đề, số báo danh và phiếu trả lời.</strong> Đặc biệt chú ý tô đúng dòng, đúng câu, không lệch thứ tự.</li>
+      </ul>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  const closeButton = document.getElementById("examTipsClose");
+
+  overlay.addEventListener("click", function (event) {
+    if (event.target === overlay) {
+      closeExamTipsOverlay();
+    }
+  });
+
+  closeButton.addEventListener("click", closeExamTipsOverlay);
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      closeExamTipsOverlay();
+    }
+  });
+}
+
+function openExamTipsOverlay() {
+  const overlay = document.getElementById("examTipsOverlay");
+  const toggle = document.getElementById("examTipsToggle");
+
+  overlay.classList.add("show");
+
+  if (toggle) {
+    toggle.checked = true;
+  }
+}
+
+function closeExamTipsOverlay() {
+  const overlay = document.getElementById("examTipsOverlay");
+  const toggle = document.getElementById("examTipsToggle");
+
+  overlay.classList.remove("show");
+
+  if (toggle) {
+    toggle.checked = false;
+  }
 }
 
 function showModal() {
@@ -245,7 +317,7 @@ async function handleSubmit(event) {
 
   setTimeout(() => {
     revealPersonalBlessing(newWish.fullName);
-  }, 1150);
+  }, 1000);
 
   revealFloatingWishes();
 
@@ -266,19 +338,19 @@ function revealPersonalBlessing(fullName) {
 
   const blessingMessages = [
     `Tự tin, bình tĩnh và thi tốt nhaaa ${givenName}!`,
-    `${givenName} ơi, hít một hơi thật sâu rồi bước vào phòng thi như một phiên bản mạnh mẽ nhất của mình nha!`,
-    `Thi thật chắc tay nha ${givenName}, câu dễ lấy điểm trước, câu khó mình quay lại sau!`,
-    `Bình tĩnh nha ${givenName}, mọi cố gắng của bạn không biến mất đâu, nó sẽ đi cùng bạn vào phòng thi.`,
-    `${givenName} cứ làm từng câu một thôi, rõ ràng, chậm vừa đủ và chắc từng điểm nha!`,
-    `Cố lên ${givenName}, chỉ một bài kiểm tra nữa thôi là bạn đến gần hơn với ước mơ của mình rồi!`
+    `${givenName} ơi, hít sâu một nhịp rồi làm từng câu thật chắc nha!`,
+    `Cố lên ${givenName}, câu dễ lấy trước, câu khó quay lại sau nha!`,
+    `${givenName}, bạn chỉ cần bình tĩnh hơn nỗi lo một chút là được!`,
+    `Thi thật chắc tay nha ${givenName}, ước mơ đang ở rất gần rồi!`,
+    `${givenName} cứ chậm vừa đủ, chắc từng câu và giữ nhịp thật ổn nha!`
   ];
 
   const subtitles = [
-    "Đừng để một câu khó làm bạn quên mất rằng mình đã chuẩn bị rất nhiều cho ngày hôm nay.",
     "Bạn không cần hoàn hảo trong từng phút, bạn chỉ cần đủ bình tĩnh để làm tốt nhất có thể.",
-    "Mùa thi này không chỉ cần kiến thức, mà còn cần nhịp thở ổn định và một cái đầu thật tỉnh.",
+    "Đừng để một câu khó làm bạn quên mất rằng mình đã chuẩn bị rất nhiều cho ngày hôm nay.",
     "Cứ đi từng bước nhỏ, từng câu hỏi nhỏ, từng điểm số nhỏ. Tất cả sẽ cộng lại thành kết quả xứng đáng.",
-    "Sai một câu không sao, chậm một nhịp không sao. Quan trọng là đừng đánh mất sự bình tĩnh của mình."
+    "Sai một câu không sao, chậm một nhịp không sao. Quan trọng là đừng đánh mất sự bình tĩnh của mình.",
+    "Mùa thi này không chỉ cần kiến thức, mà còn cần nhịp thở ổn định và một cái đầu thật tỉnh."
   ];
 
   title.textContent = pickRandom(blessingMessages);
