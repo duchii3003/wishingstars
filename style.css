@@ -1427,3 +1427,27 @@ body {
     font-size: 12px !important;
   }
 }
+.love-note {
+  position: fixed;
+  top: max(18px, env(safe-area-inset-top));
+  right: max(22px, env(safe-area-inset-right));
+  z-index: 25;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-shadow:
+    0 0 12px rgba(139, 233, 255, 0.45),
+    0 0 24px rgba(247, 182, 255, 0.18);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+@media (max-width: 760px) {
+  .love-note {
+    top: 14px;
+    right: 14px;
+    font-size: 11px;
+    opacity: 0.72;
+  }
+}
