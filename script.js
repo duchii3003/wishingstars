@@ -4,58 +4,32 @@ const SAMPLE_WISHES = [
   {
     fullName: "Minh Anh",
     nguyenVong1: "Truyền thông Đa phương tiện",
-    wish: "Mình mong đủ bình tĩnh và tự tin để làm bài thật tốt.",
-    x: 18,
-    y: 28
+    wish: "Mình mong đủ bình tĩnh và tự tin để làm bài thật tốt."
   },
   {
     fullName: "Gia Huy",
     nguyenVong1: "Công nghệ thông tin",
-    wish: "Mong mình đậu vào ngành mình yêu thích và không phụ lòng gia đình.",
-    x: 72,
-    y: 22
+    wish: "Mong mình đậu vào ngành mình yêu thích và không phụ lòng gia đình."
   },
   {
     fullName: "Ngọc Hân",
     nguyenVong1: "Thiết kế đồ họa",
-    wish: "Ước rằng mình sẽ được học ở một nơi có thể giúp mình sáng tạo mỗi ngày.",
-    x: 38,
-    y: 35
+    wish: "Ước rằng mình sẽ được học ở một nơi có thể giúp mình sáng tạo mỗi ngày."
   },
   {
     fullName: "Tuấn Kiệt",
     nguyenVong1: "Kỹ thuật phần mềm",
-    wish: "Mình mong kỳ thi sắp tới sẽ là bước đầu tiên cho giấc mơ trở thành lập trình viên.",
-    x: 63,
-    y: 48
+    wish: "Mình mong kỳ thi sắp tới sẽ là bước đầu tiên cho giấc mơ trở thành lập trình viên."
   },
   {
     fullName: "Bảo Trân",
     nguyenVong1: "Quản trị kinh doanh",
-    wish: "Chúc mình luôn mạnh mẽ, bền bỉ và không bỏ cuộc.",
-    x: 25,
-    y: 58
+    wish: "Chúc mình luôn mạnh mẽ, bền bỉ và không bỏ cuộc."
   },
   {
     fullName: "Một sĩ tử 2k8",
     nguyenVong1: "Ngành học mơ ước",
-    wish: "Mong tất cả chúng ta đều có một mùa thi thật đẹp.",
-    x: 82,
-    y: 62
-  },
-  {
-    fullName: "Khánh Linh",
-    nguyenVong1: "Marketing",
-    wish: "Ước gì mình đủ can đảm để chọn đúng điều mình thật sự yêu thích.",
-    x: 54,
-    y: 19
-  },
-  {
-    fullName: "Đức Anh",
-    nguyenVong1: "An toàn thông tin",
-    wish: "Mong mình không bị run khi vào phòng thi và làm được hết sức.",
-    x: 14,
-    y: 66
+    wish: "Mong tất cả chúng ta đều có một mùa thi thật đẹp."
   }
 ];
 
@@ -69,16 +43,16 @@ const modalBackdrop = document.getElementById("modalBackdrop");
 const wishForm = document.getElementById("wishForm");
 const hero = document.querySelector(".hero");
 
-let wishes = [];
+let remoteWishes = [];
+let pendingWishes = [];
 
 init();
 
 function init() {
-  wishes = [...SAMPLE_WISHES, ...getLocalWishes()];
-  renderWishes();
-  prepareDreamMessage();
-  preparePersonalBlessing();
+  prepareResultScreen();
   prepareExamTipsOverlay();
+
+  renderWishes();
 
   openWishForm.addEventListener("click", showModal);
   closeWishForm.addEventListener("click", hideModal);
@@ -91,64 +65,55 @@ function init() {
 
   wishForm.addEventListener("submit", handleSubmit);
 
-  setInterval(createRandomAmbientSparkle, 420);
+  loadRemoteWishes();
+
+  setInterval(loadRemoteWishes, 15000);
+  setInterval(createRandomAmbientSparkle, 520);
 }
 
-function prepareDreamMessage() {
-  if (document.getElementById("dreamMessage")) {
+function showModal() {
+  modalBackdrop.classList.add("show");
+}
+
+function hideModal() {
+  modalBackdrop.classList.remove("show");
+}
+
+function prepareResultScreen() {
+  if (document.getElementById("resultScreen")) {
     return;
   }
 
-  const message = document.createElement("div");
-  message.id = "dreamMessage";
-  message.className = "dream-message";
-  message.innerHTML = `
-    <span class="line">Quên mọi lỗi lầm đi,</span>
-    <span class="line">bạn chỉ còn cách ước mơ của mình</span>
-    <span class="line">1 bài kiểm tra nữa thôi!</span>
-  `;
+  const resultScreen = document.createElement("section");
+  resultScreen.id = "resultScreen";
+  resultScreen.className = "result-screen";
 
-  document.body.appendChild(message);
-}
+  resultScreen.innerHTML = `
+    <div class="result-content">
+      <h2 class="result-main-message">
+        <span>Quên mọi lỗi lầm đi,</span>
+        <span>bạn chỉ còn cách ước mơ</span>
+        <span>1 bài kiểm tra nữa thôi!</span>
+      </h2>
 
-function preparePersonalBlessing() {
-  if (document.getElementById("personalBlessing")) {
-    return;
-  }
+      <div class="result-blessing">
+        <p class="result-blessing-title" id="resultBlessingTitle"></p>
+        <p class="result-blessing-subtitle" id="resultBlessingSubtitle"></p>
+      </div>
 
-  const blessing = document.createElement("section");
-  blessing.id = "personalBlessing";
-  blessing.className = "personal-blessing";
-
-  blessing.innerHTML = `
-    <p class="blessing-title" id="blessingTitle"></p>
-    <p class="blessing-subtitle" id="blessingSubtitle"></p>
-
-    <div class="exam-note" id="examNote">
-      <label class="exam-toggle-row">
-        <input type="checkbox" id="examTipsToggle" />
-        <span class="exam-toggle-text">
+      <button class="result-note-card" id="openExamTips" type="button">
+        <span class="result-note-icon">✓</span>
+        <span>
           <strong>Mở một lời nhắc nhỏ trước khi vào phòng thi</strong>
-          <span>Tick vào đây để xem mẹo làm bài trắc nghiệm khi thời gian đang rất áp lực.</span>
+          <small>Chạm vào đây để xem mẹo làm bài trắc nghiệm khi thời gian đang rất áp lực.</small>
         </span>
-      </label>
+      </button>
     </div>
   `;
 
-  document.body.appendChild(blessing);
+  document.body.appendChild(resultScreen);
 
-  const examNote = document.getElementById("examNote");
-  const toggle = document.getElementById("examTipsToggle");
-
-  examNote.addEventListener("click", function () {
-    toggle.checked = true;
-    openExamTipsOverlay();
-  });
-
-  toggle.addEventListener("click", function (event) {
-    event.stopPropagation();
-    openExamTipsOverlay();
-  });
+  document.getElementById("openExamTips").addEventListener("click", openExamTipsOverlay);
 }
 
 function prepareExamTipsOverlay() {
@@ -186,15 +151,13 @@ function prepareExamTipsOverlay() {
 
   document.body.appendChild(overlay);
 
-  const closeButton = document.getElementById("examTipsClose");
+  document.getElementById("examTipsClose").addEventListener("click", closeExamTipsOverlay);
 
   overlay.addEventListener("click", function (event) {
     if (event.target === overlay) {
       closeExamTipsOverlay();
     }
   });
-
-  closeButton.addEventListener("click", closeExamTipsOverlay);
 
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") {
@@ -204,43 +167,113 @@ function prepareExamTipsOverlay() {
 }
 
 function openExamTipsOverlay() {
-  const overlay = document.getElementById("examTipsOverlay");
-  const toggle = document.getElementById("examTipsToggle");
-
-  overlay.classList.add("show");
-
-  if (toggle) {
-    toggle.checked = true;
-  }
+  document.getElementById("examTipsOverlay").classList.add("show");
 }
 
 function closeExamTipsOverlay() {
-  const overlay = document.getElementById("examTipsOverlay");
-  const toggle = document.getElementById("examTipsToggle");
+  document.getElementById("examTipsOverlay").classList.remove("show");
+}
 
-  overlay.classList.remove("show");
+async function handleSubmit(event) {
+  event.preventDefault();
 
-  if (toggle) {
-    toggle.checked = false;
+  const formData = new FormData(wishForm);
+
+  const newWish = normalizeWish({
+    fullName: formData.get("fullName").trim(),
+    nguyenVong1: formData.get("nguyenVong1").trim(),
+    wish: formData.get("wish").trim(),
+    timestamp: new Date().toISOString()
+  });
+
+  if (!newWish.fullName || !newWish.nguyenVong1 || !newWish.wish) {
+    showToast("Bạn hãy điền đầy đủ thông tin nha.");
+    return;
   }
+
+  hideModal();
+
+  const target = getTargetPosition(newWish.x, newWish.y);
+
+  await playWishAnimation(target.x, target.y);
+
+  triggerAura(target.x, target.y);
+  createSparkleStorm(isMobileScreen() ? 55 : 95);
+
+  pendingWishes.unshift(newWish);
+  renderWishes();
+
+  hero.classList.add("wish-sent");
+
+  showResultScreen(newWish);
+
+  if (!isMobileScreen()) {
+    revealFloatingWishes();
+  }
+
+  sendWishToGoogleSheet(newWish);
+
+  setTimeout(loadRemoteWishes, 2500);
+
+  wishForm.reset();
+
+  setTimeout(() => {
+    showToast("Điều ước của bạn đã được gửi lên bầu trời ✨");
+  }, 700);
 }
 
-function showModal() {
-  modalBackdrop.classList.add("show");
-}
+function showResultScreen(wish) {
+  const givenName = getVietnameseGivenName(wish.fullName);
+  const title = document.getElementById("resultBlessingTitle");
+  const subtitle = document.getElementById("resultBlessingSubtitle");
+  const resultScreen = document.getElementById("resultScreen");
 
-function hideModal() {
-  modalBackdrop.classList.remove("show");
+  const blessingMessages = [
+    `Tự tin, bình tĩnh và thi tốt nhaaa ${givenName}!`,
+    `${givenName} ơi, hít sâu một nhịp rồi làm từng câu thật chắc nha!`,
+    `Cố lên ${givenName}, câu dễ lấy trước, câu khó quay lại sau nha!`,
+    `${givenName}, bạn chỉ cần bình tĩnh hơn nỗi lo một chút là được!`,
+    `Thi thật chắc tay nha ${givenName}, ước mơ đang ở rất gần rồi!`,
+    `${givenName} cứ chậm vừa đủ, chắc từng câu và giữ nhịp thật ổn nha!`
+  ];
+
+  const subtitles = [
+    "Bạn không cần hoàn hảo trong từng phút, chỉ cần đủ bình tĩnh để làm tốt nhất có thể.",
+    "Đừng để một câu khó làm bạn quên mất rằng mình đã chuẩn bị rất nhiều.",
+    "Từng câu hỏi nhỏ, từng điểm số nhỏ sẽ cộng lại thành kết quả xứng đáng.",
+    "Sai một câu không sao, chậm một nhịp không sao. Quan trọng là giữ bình tĩnh.",
+    "Mùa thi này cần kiến thức, nhịp thở ổn định và một cái đầu thật tỉnh."
+  ];
+
+  title.textContent = pickRandom(blessingMessages);
+  subtitle.textContent = pickRandom(subtitles);
+
+  resultScreen.classList.add("show");
 }
 
 function renderWishes() {
   starsLayer.innerHTML = "";
 
-  wishes.forEach((wish, index) => {
-    createStar(wish, index === wishes.length - 1 && wish.isNew);
+  const visualWishes = buildVisualWishes();
+
+  visualWishes.forEach((wish) => {
+    createStar(wish, wish.isNew);
   });
 
-  wishCount.textContent = wishes.length;
+  wishCount.textContent = remoteWishes.length + pendingWishes.length;
+}
+
+function buildVisualWishes() {
+  const realWishes = [...pendingWishes, ...remoteWishes];
+
+  if (realWishes.length === 0) {
+    return SAMPLE_WISHES.map(normalizeWish);
+  }
+
+  return [
+    ...realWishes,
+    ...SAMPLE_WISHES.map(normalizeWish).slice(0, 4)
+  ];
 }
 
 function createStar(wish, featured = false) {
@@ -280,83 +313,99 @@ function createStar(wish, featured = false) {
   starsLayer.appendChild(star);
 }
 
-async function handleSubmit(event) {
-  event.preventDefault();
+function loadRemoteWishes() {
+  const callbackName = "__wishingStarsCallback" + Date.now();
 
-  const formData = new FormData(wishForm);
+  window[callbackName] = function (data) {
+    try {
+      if (data && data.ok && Array.isArray(data.wishes)) {
+        remoteWishes = data.wishes
+          .filter(item => item.fullName || item.wish)
+          .map(normalizeWish);
 
-  const newWish = {
-    fullName: formData.get("fullName").trim(),
-    nguyenVong1: formData.get("nguyenVong1").trim(),
-    wish: formData.get("wish").trim(),
-    x: randomBetween(14, 86),
-    y: randomBetween(16, 70),
-    isNew: true
+        pendingWishes = pendingWishes.filter(pending => {
+          return !remoteWishes.some(remote => isSameWish(remote, pending));
+        });
+
+        renderWishes();
+      }
+    } finally {
+      cleanupJsonp(callbackName);
+    }
   };
 
-  if (!newWish.fullName || !newWish.nguyenVong1 || !newWish.wish) {
-    showToast("Bạn hãy điền đầy đủ thông tin nha.");
-    return;
-  }
+  const script = document.createElement("script");
+  script.src = `${GOOGLE_SCRIPT_URL}?callback=${callbackName}&t=${Date.now()}`;
+  script.id = callbackName;
+  script.onerror = function () {
+    cleanupJsonp(callbackName);
+  };
 
-  hideModal();
-
-  const target = getTargetPosition(newWish.x, newWish.y);
-
-  await playWishAnimation(target.x, target.y);
-
-  triggerAura(target.x, target.y);
-  createSparkleStorm(95);
-
-  wishes.push(newWish);
-  saveLocalWish(newWish);
-  renderWishes();
-
-  hero.classList.add("wish-sent");
-  document.getElementById("dreamMessage").classList.add("show");
+  document.body.appendChild(script);
 
   setTimeout(() => {
-    revealPersonalBlessing(newWish.fullName);
-  }, 1000);
-
-  revealFloatingWishes();
-
-  sendWishToGoogleSheet(newWish);
-
-  wishForm.reset();
-
-  setTimeout(() => {
-    showToast("Điều ước của bạn đã được gửi lên bầu trời ✨");
-  }, 700);
+    cleanupJsonp(callbackName);
+  }, 10000);
 }
 
-function revealPersonalBlessing(fullName) {
-  const givenName = getVietnameseGivenName(fullName);
-  const title = document.getElementById("blessingTitle");
-  const subtitle = document.getElementById("blessingSubtitle");
-  const blessing = document.getElementById("personalBlessing");
+function cleanupJsonp(callbackName) {
+  const script = document.getElementById(callbackName);
 
-  const blessingMessages = [
-    `Tự tin, bình tĩnh và thi tốt nhaaa ${givenName}!`,
-    `${givenName} ơi, hít sâu một nhịp rồi làm từng câu thật chắc nha!`,
-    `Cố lên ${givenName}, câu dễ lấy trước, câu khó quay lại sau nha!`,
-    `${givenName}, bạn chỉ cần bình tĩnh hơn nỗi lo một chút là được!`,
-    `Thi thật chắc tay nha ${givenName}, ước mơ đang ở rất gần rồi!`,
-    `${givenName} cứ chậm vừa đủ, chắc từng câu và giữ nhịp thật ổn nha!`
-  ];
+  if (script) {
+    script.remove();
+  }
 
-  const subtitles = [
-    "Bạn không cần hoàn hảo trong từng phút, bạn chỉ cần đủ bình tĩnh để làm tốt nhất có thể.",
-    "Đừng để một câu khó làm bạn quên mất rằng mình đã chuẩn bị rất nhiều cho ngày hôm nay.",
-    "Cứ đi từng bước nhỏ, từng câu hỏi nhỏ, từng điểm số nhỏ. Tất cả sẽ cộng lại thành kết quả xứng đáng.",
-    "Sai một câu không sao, chậm một nhịp không sao. Quan trọng là đừng đánh mất sự bình tĩnh của mình.",
-    "Mùa thi này không chỉ cần kiến thức, mà còn cần nhịp thở ổn định và một cái đầu thật tỉnh."
-  ];
+  try {
+    delete window[callbackName];
+  } catch (error) {
+    window[callbackName] = undefined;
+  }
+}
 
-  title.textContent = pickRandom(blessingMessages);
-  subtitle.textContent = pickRandom(subtitles);
+function isSameWish(a, b) {
+  return cleanText(a.fullName) === cleanText(b.fullName)
+    && cleanText(a.nguyenVong1) === cleanText(b.nguyenVong1)
+    && cleanText(a.wish) === cleanText(b.wish);
+}
 
-  blessing.classList.add("show");
+function normalizeWish(wish) {
+  const fullName = wish.fullName || "";
+  const nguyenVong1 = wish.nguyenVong1 || "";
+  const message = wish.wish || "";
+  const seed = `${fullName}|${nguyenVong1}|${message}`;
+
+  return {
+    fullName,
+    nguyenVong1,
+    wish: message,
+    timestamp: wish.timestamp || "",
+    x: stableNumber(seed + "x", 12, 88),
+    y: stableNumber(seed + "y", 14, 72),
+    isNew: wish.isNew || false
+  };
+}
+
+function stableNumber(text, min, max) {
+  const hash = hashString(text);
+  return min + (hash % 1000) / 1000 * (max - min);
+}
+
+function hashString(text) {
+  let hash = 0;
+
+  for (let i = 0; i < text.length; i++) {
+    hash = ((hash << 5) - hash) + text.charCodeAt(i);
+    hash |= 0;
+  }
+
+  return Math.abs(hash);
+}
+
+function cleanText(value) {
+  return String(value || "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
 }
 
 function getVietnameseGivenName(fullName) {
@@ -462,7 +511,7 @@ function createSparkle(config) {
 }
 
 function revealFloatingWishes() {
-  const pool = shuffleArray([...SAMPLE_WISHES, ...getLocalWishes()]).slice(0, 7);
+  const pool = shuffleArray([...remoteWishes, ...SAMPLE_WISHES.map(normalizeWish)]).slice(0, 5);
 
   pool.forEach((wish, index) => {
     setTimeout(() => {
@@ -480,9 +529,7 @@ function createFloatingWish(wish, index) {
     { x: 62, y: 18 },
     { x: 14, y: 58 },
     { x: 66, y: 62 },
-    { x: 38, y: 72 },
-    { x: 72, y: 38 },
-    { x: 10, y: 38 }
+    { x: 38, y: 72 }
   ];
 
   const position = positions[index % positions.length];
@@ -499,7 +546,7 @@ function createFloatingWish(wish, index) {
 
   setTimeout(() => {
     floating.remove();
-  }, 7000);
+  }, 6500);
 }
 
 function showTooltip(event, wish) {
@@ -543,28 +590,6 @@ function moveTooltip(event) {
 
 function hideTooltip() {
   tooltip.classList.remove("show");
-}
-
-function saveLocalWish(wish) {
-  const localWishes = getLocalWishes();
-
-  localWishes.push({
-    fullName: wish.fullName,
-    nguyenVong1: wish.nguyenVong1,
-    wish: wish.wish,
-    x: wish.x,
-    y: wish.y
-  });
-
-  localStorage.setItem("wishingStars", JSON.stringify(localWishes));
-}
-
-function getLocalWishes() {
-  try {
-    return JSON.parse(localStorage.getItem("wishingStars")) || [];
-  } catch (error) {
-    return [];
-  }
 }
 
 async function sendWishToGoogleSheet(wish) {
@@ -625,6 +650,10 @@ function escapeHTML(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function isMobileScreen() {
+  return window.innerWidth <= 760;
 }
 
 function randomBetween(min, max) {
