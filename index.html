@@ -1,1 +1,94 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <title>Wishing Stars - Bầu trời điều ước</title>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="sky" id="sky">
+    <div class="aurora aurora-1"></div>
+    <div class="aurora aurora-2"></div>
+    <div class="moon-glow"></div>
+
+    <section class="hero">
+      <p class="eyebrow">Wishing Stars</p>
+
+      <h1>Gửi điều ước của bạn lên bầu trời</h1>
+
+      <p class="subtitle">
+        Trước kỳ thi Đại học, hãy viết xuống một nguyện vọng, một ước mơ,
+        hoặc một lời nhắn cho chính mình. Điều ước ấy sẽ trở thành một vì sao lấp lánh.
+      </p>
+
+      <button class="primary-btn" id="openWishForm">
+        Viết điều ước
+      </button>
+
+      <p class="counter">
+        Đã có <span id="wishCount">0</span> điều ước được gửi lên bầu trời
+      </p>
+    </section>
+
+    <div class="stars-layer" id="starsLayer"></div>
+
+    <div class="tooltip" id="tooltip"></div>
+
+    <div class="modal-backdrop" id="modalBackdrop">
+      <form class="wish-form" id="wishForm">
+        <button type="button" class="close-btn" id="closeWishForm">×</button>
+
+        <p class="form-kicker">Điều ước của bạn</p>
+
+        <h2>Thả một vì sao lên bầu trời</h2>
+
+        <label>
+          Họ và tên
+          <input
+            type="text"
+            name="fullName"
+            id="fullName"
+            placeholder="Ví dụ: Nguyễn Minh Anh"
+            required
+          />
+        </label>
+
+        <label>
+          Nguyện vọng 1
+          <input
+            type="text"
+            name="nguyenVong1"
+            id="nguyenVong1"
+            placeholder="Ví dụ: Truyền thông Đa phương tiện - Đại học FPT"
+            required
+          />
+        </label>
+
+        <label>
+          Điều ước
+          <textarea
+            name="wish"
+            id="wish"
+            rows="4"
+            placeholder="Ví dụ: Mình mong đủ bình tĩnh, tự tin và may mắn để làm bài thật tốt."
+            required
+          ></textarea>
+        </label>
+
+        <button type="submit" class="submit-btn">
+          Gửi lên bầu trời
+        </button>
+
+        <p class="form-note">
+          Điều ước của bạn sẽ được lưu lại như một vì sao nhỏ giữa bầu trời hy vọng.
+        </p>
+      </form>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
