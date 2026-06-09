@@ -252,18 +252,20 @@ h1 {
 }
 
 .dream-message {
-  position: absolute;
+  position: fixed;
   left: 50%;
-  top: 16vh;
+  top: 12vh;
+  z-index: 17;
   width: min(980px, calc(100vw - 36px));
   transform: translateX(-50%) scale(0.92);
   opacity: 0;
   color: #ffffff;
-  font-size: clamp(34px, 6.2vw, 82px);
-  line-height: 1.05;
+  font-size: clamp(34px, 5.2vw, 76px);
+  line-height: 1.08;
   letter-spacing: -0.055em;
   font-weight: 900;
   text-align: center;
+  text-wrap: balance;
   text-shadow:
     0 0 22px rgba(255, 255, 255, 0.42),
     0 0 48px rgba(139, 233, 255, 0.58),
@@ -271,8 +273,13 @@ h1 {
   pointer-events: none;
 }
 
+.dream-message .line {
+  display: block;
+  white-space: nowrap;
+}
+
 .dream-message.show {
-  animation: dreamReveal 1.35s ease forwards;
+  animation: dreamReveal 1.2s ease forwards;
 }
 
 @keyframes dreamReveal {
@@ -418,6 +425,8 @@ h1 {
 .wish-form {
   position: relative;
   width: min(520px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
   padding: 30px;
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 28px;
@@ -667,67 +676,22 @@ textarea:focus {
   }
 }
 
-.toast {
-  position: fixed;
-  left: 50%;
-  bottom: 28px;
-  z-index: 60;
-  transform: translateX(-50%) translateY(20px);
-  padding: 14px 18px;
-  border-radius: 999px;
-  color: white;
-  background: rgba(8, 13, 34, 0.82);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(16px);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.32);
-  opacity: 0;
-  transition: all 0.25s ease;
-}
-
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
-@media (max-width: 640px) {
-  .hero {
-    padding-top: 11vh;
-  }
-
-  h1 {
-    font-size: clamp(44px, 16vw, 72px);
-  }
-
-  .subtitle {
-    font-size: 16px;
-  }
-
-  .wish-form {
-    padding: 24px;
-  }
-
-  .wish-form h2 {
-    font-size: 25px;
-  }
-
-  .dream-message {
-    top: 14vh;
-    font-size: clamp(34px, 12vw, 58px);
-  }
-}
 .personal-blessing {
   position: fixed;
   left: 50%;
-  top: 48vh;
+  top: 53vh;
   z-index: 18;
-  width: min(780px, calc(100vw - 32px));
+  width: min(760px, calc(100vw - 32px));
   transform: translateX(-50%) translateY(26px) scale(0.96);
   opacity: 0;
+  visibility: hidden;
   text-align: center;
-  pointer-events: auto;
+  pointer-events: none;
 }
 
 .personal-blessing.show {
+  visibility: visible;
+  pointer-events: auto;
   animation: blessingReveal 1.25s ease forwards;
 }
 
@@ -747,11 +711,12 @@ textarea:focus {
 
 .blessing-title {
   margin: 0;
-  font-size: clamp(24px, 3.4vw, 44px);
-  line-height: 1.18;
+  font-size: clamp(25px, 3.2vw, 40px);
+  line-height: 1.16;
   font-weight: 900;
   letter-spacing: -0.035em;
   color: #ffffff;
+  text-wrap: balance;
   text-shadow:
     0 0 20px rgba(255, 255, 255, 0.44),
     0 0 48px rgba(139, 233, 255, 0.42),
@@ -759,16 +724,16 @@ textarea:focus {
 }
 
 .blessing-subtitle {
-  margin: 12px auto 0;
-  max-width: 620px;
+  margin: 10px auto 0;
+  max-width: 640px;
   color: rgba(255, 255, 255, 0.76);
-  font-size: 15px;
-  line-height: 1.55;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .exam-note {
-  margin: 22px auto 0;
-  width: min(620px, 100%);
+  margin: 18px auto 0;
+  width: min(560px, 100%);
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 22px;
   background:
@@ -780,6 +745,16 @@ textarea:focus {
     0 0 38px rgba(139, 233, 255, 0.13);
   overflow: hidden;
   text-align: left;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.exam-note:hover {
+  transform: translateY(-2px);
+  border-color: rgba(139, 233, 255, 0.38);
+  box-shadow:
+    0 20px 56px rgba(0, 0, 0, 0.36),
+    0 0 46px rgba(139, 233, 255, 0.2);
 }
 
 .exam-toggle-row {
@@ -815,133 +790,8 @@ textarea:focus {
 }
 
 .exam-tips {
-  display: none;
-  padding: 0 18px 18px 48px;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 14px;
-  line-height: 1.52;
-}
-
-.exam-note.open .exam-tips {
-  display: block;
-  animation: tipsOpen 0.32s ease;
-}
-
-@keyframes tipsOpen {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.exam-tips ul {
-  margin: 0;
-  padding-left: 18px;
-}
-
-.exam-tips li {
-  margin-bottom: 8px;
-}
-
-.exam-tips li:last-child {
-  margin-bottom: 0;
-}
-
-@media (max-width: 640px) {
-  .personal-blessing {
-    top: 47vh;
-  }
-
-  .blessing-title {
-    font-size: clamp(23px, 8vw, 34px);
-  }
-
-  .blessing-subtitle {
-    font-size: 14px;
-  }
-
-  .exam-note {
-    margin-top: 16px;
-  }
-
-  .exam-toggle-row {
-    padding: 14px 15px;
-  }
-
-  .exam-tips {
-    padding: 0 15px 16px 42px;
-    font-size: 13px;
-  }
-}
-/* ===== FINAL POLISH: DREAM MESSAGE + CENTERED EXAM TIPS MODAL ===== */
-
-.dream-message {
-  position: fixed !important;
-  left: 50% !important;
-  top: 12vh !important;
-  z-index: 17 !important;
-  width: min(980px, calc(100vw - 36px)) !important;
-  transform: translateX(-50%) scale(0.92);
-  text-wrap: balance;
-}
-
-.dream-message .line {
-  display: block;
-  white-space: nowrap;
-}
-
-.dream-message.show {
-  animation: dreamReveal 1.2s ease forwards;
-}
-
-.personal-blessing {
-  top: 53vh !important;
-  z-index: 18 !important;
-  width: min(760px, calc(100vw - 32px)) !important;
-}
-
-.blessing-title {
-  font-size: clamp(25px, 3.2vw, 40px) !important;
-  line-height: 1.16 !important;
-  text-wrap: balance;
-}
-
-.blessing-subtitle {
-  max-width: 640px !important;
-  margin-top: 10px !important;
-  font-size: 14px !important;
-  line-height: 1.5 !important;
-}
-
-.exam-note {
-  margin-top: 18px !important;
-  width: min(560px, 100%) !important;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-}
-
-.exam-note:hover {
-  transform: translateY(-2px);
-  border-color: rgba(139, 233, 255, 0.38);
-  box-shadow:
-    0 20px 56px rgba(0, 0, 0, 0.36),
-    0 0 46px rgba(139, 233, 255, 0.2);
-}
-
-.exam-toggle-row {
-  cursor: pointer;
-}
-
-.exam-tips {
   display: none !important;
 }
-
-/* Full-screen tips modal */
 
 .exam-tips-overlay {
   position: fixed;
@@ -1065,10 +915,45 @@ textarea:focus {
   transform: scale(1.05);
 }
 
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  z-index: 60;
+  transform: translateX(-50%) translateY(20px);
+  padding: 14px 18px;
+  border-radius: 999px;
+  color: white;
+  background: rgba(8, 13, 34, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.32);
+  opacity: 0;
+  transition: all 0.25s ease;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 @media (max-width: 760px) {
+  .hero {
+    padding-top: 10vh;
+  }
+
+  h1 {
+    font-size: clamp(44px, 16vw, 72px);
+  }
+
+  .subtitle {
+    font-size: 16px;
+  }
+
   .dream-message {
-    top: 10vh !important;
-    font-size: clamp(30px, 10vw, 56px) !important;
+    top: 9vh;
+    font-size: clamp(30px, 10vw, 54px);
+    line-height: 1.08;
   }
 
   .dream-message .line {
@@ -1076,11 +961,33 @@ textarea:focus {
   }
 
   .personal-blessing {
-    top: 50vh !important;
+    top: 48vh;
+    width: min(92vw, 520px);
   }
 
   .blessing-title {
-    font-size: clamp(22px, 7vw, 32px) !important;
+    font-size: clamp(22px, 7vw, 32px);
+  }
+
+  .blessing-subtitle {
+    font-size: 13px;
+  }
+
+  .exam-note {
+    margin-top: 14px;
+  }
+
+  .exam-toggle-row {
+    padding: 14px 15px;
+  }
+
+  .wish-form {
+    padding: 24px;
+    max-height: calc(100vh - 28px);
+  }
+
+  .wish-form h2 {
+    font-size: 25px;
   }
 
   .exam-tips-card {
