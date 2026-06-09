@@ -42,6 +42,20 @@ const SAMPLE_WISHES = [
     wish: "Mong tất cả chúng ta đều có một mùa thi thật đẹp.",
     x: 82,
     y: 62
+  },
+  {
+    fullName: "Khánh Linh",
+    nguyenVong1: "Marketing",
+    wish: "Ước gì mình đủ can đảm để chọn đúng điều mình thật sự yêu thích.",
+    x: 54,
+    y: 19
+  },
+  {
+    fullName: "Đức Anh",
+    nguyenVong1: "An toàn thông tin",
+    wish: "Mong mình không bị run khi vào phòng thi và làm được hết sức.",
+    x: 14,
+    y: 66
   }
 ];
 
@@ -53,6 +67,7 @@ const openWishForm = document.getElementById("openWishForm");
 const closeWishForm = document.getElementById("closeWishForm");
 const modalBackdrop = document.getElementById("modalBackdrop");
 const wishForm = document.getElementById("wishForm");
+const hero = document.querySelector(".hero");
 
 let wishes = [];
 
@@ -61,6 +76,7 @@ init();
 function init() {
   wishes = [...SAMPLE_WISHES, ...getLocalWishes()];
   renderWishes();
+  prepareDreamMessage();
 
   openWishForm.addEventListener("click", showModal);
   closeWishForm.addEventListener("click", hideModal);
@@ -72,6 +88,21 @@ function init() {
   });
 
   wishForm.addEventListener("submit", handleSubmit);
+
+  setInterval(createRandomAmbientSparkle, 420);
+}
+
+function prepareDreamMessage() {
+  if (document.getElementById("dreamMessage")) {
+    return;
+  }
+
+  const message = document.createElement("div");
+  message.id = "dreamMessage";
+  message.className = "dream-message";
+  message.textContent = "Quên mọi lỗi lầm đi, bạn chỉ còn cách ước mơ của mình 1 bài kiểm tra nữa thôi!";
+
+  hero.appendChild(message);
 }
 
 function showModal() {
@@ -97,19 +128,20 @@ function createStar(wish, featured = false) {
   star.className = featured ? "wish-star featured" : "wish-star";
   star.type = "button";
 
-  const size = randomBetween(4, 9);
+  const size = randomBetween(4, 10);
   const color = pickRandom([
     "#ffffff",
     "#fff4bb",
     "#8be9ff",
-    "#f7b6ff"
+    "#f7b6ff",
+    "#b794ff"
   ]);
 
   star.style.setProperty("--x", `${wish.x}%`);
   star.style.setProperty("--y", `${wish.y}%`);
   star.style.setProperty("--size", `${size}px`);
   star.style.setProperty("--star-color", color);
-  star.style.setProperty("--speed", `${randomBetween(2.2, 4.6)}s`);
+  star.style.setProperty("--speed", `${randomBetween(2, 4.3)}s`);
 
   star.addEventListener("mouseenter", function (event) {
     showTooltip(event, wish);
@@ -137,8 +169,8 @@ async function handleSubmit(event) {
     fullName: formData.get("fullName").trim(),
     nguyenVong1: formData.get("nguyenVong1").trim(),
     wish: formData.get("wish").trim(),
-    x: randomBetween(12, 88),
-    y: randomBetween(14, 72),
+    x: randomBetween(14, 86),
+    y: randomBetween(16, 70),
     isNew: true
   };
 
@@ -150,17 +182,28 @@ async function handleSubmit(event) {
   hideModal();
 
   const target = getTargetPosition(newWish.x, newWish.y);
+
   await playWishAnimation(target.x, target.y);
+
+  triggerAura(target.x, target.y);
+  createSparkleStorm(95);
 
   wishes.push(newWish);
   saveLocalWish(newWish);
   renderWishes();
 
+  hero.classList.add("wish-sent");
+  document.getElementById("dreamMessage").classList.add("show");
+
+  revealFloatingWishes();
+
   sendWishToGoogleSheet(newWish);
 
   wishForm.reset();
 
-  showToast("Điều ước của bạn đã được gửi lên bầu trời ✨");
+  setTimeout(() => {
+    showToast("Điều ước của bạn đã được gửi lên bầu trời ✨");
+  }, 700);
 }
 
 function getTargetPosition(xPercent, yPercent) {
@@ -176,7 +219,7 @@ function playWishAnimation(targetX, targetY) {
     comet.className = "wish-comet";
 
     const startX = window.innerWidth / 2;
-    const startY = window.innerHeight * 0.9;
+    const startY = window.innerHeight * 0.91;
 
     comet.style.setProperty("--fly-x", `${targetX - startX}px`);
     comet.style.setProperty("--fly-y", `${targetY - startY}px`);
@@ -186,8 +229,110 @@ function playWishAnimation(targetX, targetY) {
     setTimeout(() => {
       comet.remove();
       resolve();
-    }, 1450);
+    }, 1550);
   });
+}
+
+function triggerAura(x, y) {
+  const aura = document.createElement("div");
+  aura.className = "star-aura";
+  aura.style.setProperty("--aura-x", `${x}px`);
+  aura.style.setProperty("--aura-y", `${y}px`);
+
+  document.body.appendChild(aura);
+
+  setTimeout(() => {
+    aura.remove();
+  }, 2000);
+}
+
+function createSparkleStorm(amount) {
+  for (let i = 0; i < amount; i++) {
+    setTimeout(() => {
+      createSparkle({
+        x: randomBetween(4, 96),
+        y: randomBetween(4, 96),
+        size: randomBetween(3, 9),
+        time: randomBetween(0.9, 2.2)
+      });
+    }, i * 18);
+  }
+}
+
+function createRandomAmbientSparkle() {
+  if (document.hidden) {
+    return;
+  }
+
+  createSparkle({
+    x: randomBetween(2, 98),
+    y: randomBetween(2, 92),
+    size: randomBetween(2, 5),
+    time: randomBetween(1.2, 2.6)
+  });
+}
+
+function createSparkle(config) {
+  const sparkle = document.createElement("div");
+  sparkle.className = "screen-sparkle";
+
+  sparkle.style.setProperty("--sparkle-x", `${config.x}%`);
+  sparkle.style.setProperty("--sparkle-y", `${config.y}%`);
+  sparkle.style.setProperty("--sparkle-size", `${config.size}px`);
+  sparkle.style.setProperty("--sparkle-time", `${config.time}s`);
+  sparkle.style.setProperty("--sparkle-color", pickRandom([
+    "#8be9ff",
+    "#fff4bb",
+    "#f7b6ff",
+    "#ffffff"
+  ]));
+
+  document.body.appendChild(sparkle);
+
+  setTimeout(() => {
+    sparkle.remove();
+  }, config.time * 1000 + 120);
+}
+
+function revealFloatingWishes() {
+  const pool = shuffleArray([...SAMPLE_WISHES, ...getLocalWishes()]).slice(0, 7);
+
+  pool.forEach((wish, index) => {
+    setTimeout(() => {
+      createFloatingWish(wish, index);
+    }, 350 + index * 420);
+  });
+}
+
+function createFloatingWish(wish, index) {
+  const floating = document.createElement("div");
+  floating.className = "floating-wish";
+
+  const positions = [
+    { x: 8, y: 18 },
+    { x: 62, y: 18 },
+    { x: 14, y: 58 },
+    { x: 66, y: 62 },
+    { x: 38, y: 72 },
+    { x: 72, y: 38 },
+    { x: 10, y: 38 }
+  ];
+
+  const position = positions[index % positions.length];
+
+  floating.style.setProperty("--wish-x", `${position.x}%`);
+  floating.style.setProperty("--wish-y", `${position.y}%`);
+
+  floating.innerHTML = `
+    <strong>${escapeHTML(wish.fullName)}</strong>
+    <span>${escapeHTML(wish.wish)}</span>
+  `;
+
+  document.body.appendChild(floating);
+
+  setTimeout(() => {
+    floating.remove();
+  }, 7000);
 }
 
 function showTooltip(event, wish) {
@@ -212,7 +357,7 @@ function showTooltip(event, wish) {
 
 function moveTooltip(event) {
   const padding = 18;
-  const tooltipWidth = 300;
+  const tooltipWidth = 310;
 
   let left = event.clientX + padding;
   let top = event.clientY + padding;
@@ -306,10 +451,23 @@ function showToast(message) {
   }, 2800);
 }
 
+function escapeHTML(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 function randomBetween(min, max) {
   return Math.random() * (max - min) + min;
 }
 
 function pickRandom(array) {
   return array[Math.floor(Math.random() * array.length)];
+}
+
+function shuffleArray(array) {
+  return array.sort(() => Math.random() - 0.5);
 }
